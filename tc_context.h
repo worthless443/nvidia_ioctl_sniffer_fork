@@ -3,6 +3,7 @@
 
 class TcContext {
   public:
+    TcContext();
     void init();
     void *mem_error = (void*)0x7ffff7ffb000;
     int work_submit_token = -1;
