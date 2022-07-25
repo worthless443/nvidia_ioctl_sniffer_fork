@@ -1,4 +1,5 @@
 TARGET=gpu_driver
+BENCHMARK=benchmark/run.cc
 LINK=-L./out
 LIBS=-lcuda -lpthread  -ldl -lstdc++
 SHARED_LIBRARY=out/libsniffas.so
@@ -27,5 +28,12 @@ $(TARGET) : $(Objs)
 
 $(SHARED_LIBRARY):
 	clang++ $(CXX_FLAGS) $(LIBS) $(INCLUDE) $(Obj) -shared -o $@
+.PHONY: benchmark
+benchmark:
+	g++  $(BENCHMARK)  -o benchmark/bench
+#TODO add variables for commands and benchmark log file
 clean:
 	rm -rf out/*.o $(TARGET) $(SHARED_LIBRARY) 
+clean_all:clean
+	rm -rf benchmark/bench	
+
