@@ -20,11 +20,11 @@ Obj=src/sniff.cc
 
 all: $(SHARED_LIBRARY) $(TARGET) 
 
-$(Objs): 	
-	clang++ -c $(INCLUDE) src/$(@:%.o=%.cc) -o out/$@
+$(Objs): %.o : %.cc
+	clang++ -c $(INCLUDE) src/$^ -o $@
 
 $(TARGET) : $(Objs)
-	clang++ $(LINK) $(LIBS) $(patsubst %.o,out/%.o,$(^)) /usr/lib64/libnvidia-ml.so -lsniffas -o $@
+	clang++ $(LINK) $(LIBS) $(patsubst %.o,%.o,$(^)) /usr/lib64/libnvidia-ml.so -lsniffas -o $@
 
 $(SHARED_LIBRARY):
 	clang++ $(CXX_FLAGS) $(LIBS) $(INCLUDE) $(Obj) -shared -o $@
@@ -32,8 +32,10 @@ $(SHARED_LIBRARY):
 benchmark:
 	g++  $(BENCHMARK)  -o benchmark/bench
 #TODO add variables for commands and benchmark log file
-clean:
-	rm -rf out/*.o $(TARGET) $(SHARED_LIBRARY) 
+clean_obj:
+	rm -rf *.o
+clean: clean_obj
+	rm -rf $(TARGET) $(SHARED_LIBRARY) 
 clean_all:clean
 	rm -rf benchmark/bench	
 
