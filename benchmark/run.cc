@@ -90,7 +90,7 @@ std::vector<int> parseLines(char *buf) {
 	return vec;
 }
 
-void match_matrix(std::vector<int> vec) {
+std::vector<std::vector<int>> match_matrix(std::vector<int> vec) {
 	std::vector<std::vector<int>> mat;
 	for(int i=0;i<vec.size();i++) {
 		std::vector<int> vec_;
@@ -99,15 +99,17 @@ void match_matrix(std::vector<int> vec) {
 		}
 		mat.push_back(vec_);
 	}
-	for(auto v : mat) {
-		for(int e : v) {
-			std::cout << e << " ";
-		}
-		std::cout << "\n";
-	}
+	return  mat;
+// 	for(auto v : mat) {
+// 		for(int e : v) {
+// 			std::cout << e << " ";
+// 		}
+// 		std::cout << "\n";
+// 	}
 }
 
-void ParseBenchmarkFile() {
+
+const char *ParseBenchmarkFile() {
 	std::stringstream lines("fuck\nnigger");
 	char buf[100];
 	for(;lines>>buf;buf!=NULL); //std::cout << std::string{buf} + "you" << "\n";
@@ -117,12 +119,56 @@ void ParseBenchmarkFile() {
 	fbuf->pubseekpos(0,is.in);
 	char *buf_ = new char[size];
 	fbuf->sgetn(buf_,size);
-	std::vector<int> vec = parseLines(buf_);
-	match_matrix(vec);
+	return buf_;
+	//std::vector<int> vec = parseLines(buf_);
+	//match_matrix(vec);
 	//std::cout << buf_;
 	
 }
+
+int write_to_file() {
+	std::ofstream file("benchmark.plt", std::ios::out);
+	if(!file.is_open()) return -1;
+
+	const char *parsed_buf = ParseBenchmarkFile();
+	std::vector<std::vector<int>> mat = match_matrix(parseLines((char*)parsed_buf));
+
+	for(auto v : mat) {
+ 		for(int e : v) {
+ 			file << e << " ";
+ 		}
+ 		file << "\n";
+ 	}
+	file.close();
+	return 0;
+}
+
+int write_to_file(const char *parsed_buf) {
+	std::ofstream file("benchmark_.plt", std::ios::out);
+	if(!file.is_open()) return -1;
+	std::vector<std::vector<int>> mat = match_matrix(parseLines((char*)parsed_buf));
+	std::string s = "";
+	for(auto v : mat) {
+		std::string _s = "";
+ 		for(int e : v) {
+			char *tmp_buf = new char;
+			sprintf(tmp_buf, "%d ", e);
+			_s = _s + tmp_buf;
+			delete tmp_buf;
+ 		}
+		s = s + _s + "\n";
+		_s = "";
+ 	}
+
+	file << s.c_str();
+	return 0;
+}
+
+// TODO organize it to an usable way
 int main(int argc, char **argv) {
+	const char *parsed_buf = ParseBenchmarkFile();
+	write_to_file(parsed_buf);
+	return 0;
 	char *buf = new char;
 	char *prev = new char;//[256];
 	std::ofstream outstream(BENCHMARK_FILE, std::ios_base::app);
