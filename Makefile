@@ -1,3 +1,4 @@
+CXX=g++
 TARGET=gpu_driver
 BENCHMARK=benchmark/run.cc
 LINK=-L./out
@@ -15,22 +16,22 @@ INCLUDE=-I./include -I./\
 
 INCLUDE_SNIFF=-Iopen-gpu-kernel-modules -Iopen-gpu-kernel-modules/kernel-open/common/inc -Iopen-gpu-kernel-modules/src/common/sdk/nvidia/inc
 CXX_FLAGS=-fno-exceptions -fPIC
-Objs=gpu_driver.o tc_context.o
+Objs=src/gpu_driver.o src/tc_context.o
 Obj=src/sniff.cc
 
 all: $(SHARED_LIBRARY) $(TARGET) 
 
 $(Objs): %.o : %.cc
-	clang++ -c $(INCLUDE) src/$^ -o $@
+	$(CXX) -c $(INCLUDE) $^ -o $@
 
 $(TARGET) : $(Objs)
-	clang++ $(LINK) $(LIBS) $(patsubst %.o,%.o,$(^)) /usr/lib64/libnvidia-ml.so -lsniffas -o $@
+	$(CXX) $(LINK) $(LIBS) $(patsubst %.o,%.o,$(^)) /usr/lib64/libnvidia-ml.so -lsniffas -o $@
 
 $(SHARED_LIBRARY):
-	clang++ $(CXX_FLAGS) $(LIBS) $(INCLUDE) $(Obj) -shared -o $@
+	$(CXX) $(CXX_FLAGS) $(LIBS) $(INCLUDE) $(Obj) -shared -o $@
 .PHONY: benchmark
 benchmark:
-	g++  $(BENCHMARK)  -o benchmark/bench
+	$(CXX) $(BENCHMARK)  -o benchmark/bench
 #TODO add variables for commands and benchmark log file
 clean_obj:
 	rm -rf *.o
